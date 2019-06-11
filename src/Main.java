@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -9,44 +10,39 @@ public class Main {
     int nMax = 10000;
     int nMin = 1;
 
-    long[] results = new long[runCount];
+//    long[] results = new long[runCount];
+
+    Map <Integer, Long> myMap = new HashMap<Integer, Long>();
+
 
     for (int n = sampleRate * 1; n < nMax; n += sampleRate) {
+
+      // generate an empty array to store the time values so they can be averaged
+      long[] times = new long[runCount];
+
       for (int i = 0; i < runCount; i++) {
         // generate numbers
         Integer[] nums =  getRandomNumberList(n);
 
+        // sort, and time the sorting
         long start = System.nanoTime();
         InsertionSort.sort(nums);
         long end = System.nanoTime();
         long elapsed = end-start;
-        System.out.println("elapsed: " + elapsed);
+
+        // average the numbers in the times array
+        long avg = getAverage(times);
+
+        // n = the number of items sorted
+        // elapsed = the time taken
+        // avg = the average sorting time for the given n
+
+        myMap.put(n, avg);
+
+        System.out.println("sorted " + n + "numbers in " + avg);
       }
+      generateAndSortNumbers(n, runCount);
     }
-    // sort 100 times, time each one, average, add to array
-
-    // start timer
-    // sort array
-    // end timer
-    // add time to array
-    // average array
-
-    // add each to an array index = n, t = average time
-    // process array into something that can be plotted
-
-
-    // 1000 times
-    // generate 10 random numbers
-    // sort them
-    // time it
-    // x: 10, y: 0.05
-    // [ {x: 10, y: 0.05} .... {x: 10, y: 0.04} ] <-- many at x = 10
-    // [ {x: 11, y: 0.05} .... {x: 11, y: 0.04} ] <-- many at x = 11
-    // [ {x: 12, y: 0.05} .... {x: 12, y: 0.04} ] <-- many at x = 12
-    // average each x:10, put into new array
-    // average each x:11, put into new array
-    // ....
-    // return result
 
   }
 
@@ -98,4 +94,11 @@ public class Main {
     return false;
   }
 
+  public static void usingBufferedWritter() throws IOException {
+    String fileContent = "Hello Learner !! Welcome to howtodoinjava.com.";
+
+    BufferedWriter writer = new BufferedWriter(new FileWriter("c:/temp/samplefile1.txt"));
+    writer.write(fileContent);
+    writer.close();
+  }
 }
