@@ -2,48 +2,91 @@ import java.util.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.io.StringWriter;
+import java.io.PrintWriter;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 public class Main {
-  public static void main(String[] args) {
-    int sampleRate = 1000;
-    int runCount = 5;
-    int nMax = 10000;
-    int nMin = 1;
+  public static void main(String[] args) throws IOException {
 
-//    long[] results = new long[runCount];
+    boolean testRun = true;
 
-    Map <Integer, Long> myMap = new HashMap<Integer, Long>();
+    if (testRun) {
 
-
-    for (int n = sampleRate * 1; n < nMax; n += sampleRate) {
-
-      // generate an empty array to store the time values so they can be averaged
-      long[] times = new long[runCount];
-
-      for (int i = 0; i < runCount; i++) {
-        // generate numbers
-        Integer[] nums =  getRandomNumberList(n);
-
-        // sort, and time the sorting
-        long start = System.nanoTime();
-        InsertionSort.sort(nums);
-        long end = System.nanoTime();
-        long elapsed = end-start;
-
-        // average the numbers in the times array
-        long avg = getAverage(times);
-
-        // n = the number of items sorted
-        // elapsed = the time taken
-        // avg = the average sorting time for the given n
-
-        myMap.put(n, avg);
-
-        System.out.println("sorted " + n + "numbers in " + avg);
-      }
-      generateAndSortNumbers(n, runCount);
+      int[] nums = {2, 5, 0, 16, 42, 8, 3, 12, 7, 12};
+      MergeSort.sort(nums);
+      return;
     }
 
+    long start = System.nanoTime();
+
+
+    int sampleRate = 1000;
+    int runCount = 20;
+    int nMax = 25000;
+    String filePath = "./data.csv";
+    // store results in the form of:
+    // key: number of items sorted (integer) ==> value: time (integer)
+    // time taken to sort is an average from runCount runs
+    Map <Integer, Long> myMap = new HashMap<Integer, Long>();
+
+    for (int n = sampleRate; n <= nMax; n += sampleRate) {
+      // generate random numbers, sort them, do this runCount times
+      // store the individual sort times
+      long[] times = generateAndSortNumbers(n, runCount);
+
+      // average the times
+      long avg = getAverage(times);
+
+      // n = the number of items sorted
+      // avg = the average sorting time for the given n
+      myMap.put(n, avg);
+    }
+
+    writeStringToFile(convertMapToString(myMap), filePath);
+
+    long end = System.nanoTime();
+    long elapsed = end-start;
+    System.out.println("Total elapsed time: " + elapsed / 1000000000 + " seconds");
+  }
+
+
+  public static void writeStringToFile(String fileContent, String filePath) throws IOException {
+    BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+    writer.write(fileContent);
+    writer.close();
+  }
+
+  public static String convertMapToString(Map<Integer, Long> myMap) {
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter, true);
+
+    String result = "";
+    int count = 0;
+    int lastItem = myMap.size() - 1;
+    for (Map.Entry<Integer, Long> entry : myMap.entrySet()) {
+      writer.println(entry.getKey() + ", " + entry.getValue().toString());
+    }
+    return stringWriter.toString();
+  }
+
+  public static long[] generateAndSortNumbers(int n, int runCount) {
+    long[] times = new long[runCount];
+
+    for (int i = 0; i < runCount; i++) {
+      // generate numbers
+      Integer[] nums =  getRandomNumberList(n);
+
+      // sort, and time the sorting
+      long start = System.nanoTime();
+//      InsertionSort.sort(nums);
+      SelectionSort.sort(nums);
+      long end = System.nanoTime();
+      long elapsed = end-start;
+      times[i] = elapsed;
+    }
+    return times;
   }
 
   public static long getAverage(long[] nums) {
@@ -94,11 +137,4 @@ public class Main {
     return false;
   }
 
-  public static void usingBufferedWritter() throws IOException {
-    String fileContent = "Hello Learner !! Welcome to howtodoinjava.com.";
-
-    BufferedWriter writer = new BufferedWriter(new FileWriter("c:/temp/samplefile1.txt"));
-    writer.write(fileContent);
-    writer.close();
-  }
 }
