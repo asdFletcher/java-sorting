@@ -1,30 +1,37 @@
 import java.util.Arrays;
 
 public class MergeSort {
-  public static int[] sort(int[] nums) {
+  public static Integer[] sort(Integer[] nums) {
     return splitAndMerge(0, nums.length - 1, nums);
   }
 
-  public static int[] splitAndMerge(int start, int end, int[] arr) {
+  public static Integer[] splitAndMerge(int start, int end, Integer[] arr) {
     // base case
+    int a;
     if (end == start) {
-      int[] res = new int[] {arr[start]};
+      try {
+        a = arr[start];
+      } catch (Error e) {
+      System.out.println("start: " + start + ", arr: " + Arrays.toString(arr));
+
+      }
+      Integer[] res = new Integer[] {arr[start]};
       return res;
     }
 
     int mid = start + (int)((double)end - (double)start) / 2;
 
-    int[] left = splitAndMerge(start, mid, arr);
-    int[] right = splitAndMerge(mid + 1, end, arr);
+    Integer[] left = splitAndMerge(start, mid, arr);
+    Integer[] right = splitAndMerge(mid + 1, end, arr);
 
     return merge(left, right);
   }
 
-  public static int[] merge(int[] leftList, int[] rightList) {
+  public static Integer[] merge(Integer[] leftList, Integer[] rightList) {
     // copies array, inefficient space usage, could zipper lists for O(1) space
     int currentLeft = 0;
     int currentRight = 0;
-    int[] result = new int[leftList.length + rightList.length];
+    Integer[] result = new Integer[leftList.length + rightList.length];
 
     // advance L & R until all numbers have been added to new sorted array
     for( int i = 0; i < result.length; i++) {
