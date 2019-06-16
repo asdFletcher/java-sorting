@@ -8,6 +8,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 public class Main {
+
+  static boolean SHUFFLENUMS = true;
+
   public static void main(String[] args) throws IOException {
 
     boolean testRun = false;
@@ -15,10 +18,12 @@ public class Main {
 
     long start = System.nanoTime(); // total test timer
 
-    int sampleRate = 1;
-    int runCount = 1000;
-    int nMax = 1000;
+    int sampleRate = 1000;
+    int runCount = 40;
+    int nMax = 100000;
     String filePath = "./data.csv";
+
+
     // store results in the form of:
     // key: number of items sorted (integer), value: time (integer)
     // time taken to sort is an average from runCount runs
@@ -32,6 +37,12 @@ public class Main {
       // average the times
       long avg = getAverage(times);
 
+      // get the min time
+      long min = getMin(times);
+
+      // get the min time
+      long max = getMax(times);
+
       // n = the number of items sorted
       // avg = the average sorting time for the given n
       myMap.put(n, avg);
@@ -44,7 +55,40 @@ public class Main {
     System.out.println("Total elapsed time: " + elapsed / 1000000000 + " seconds");
   }
 
+  public static long getMax(long[] times) {
+    long max = times[0];
+    for (int i = 0; i < times.length; i++) {
+      if (times[i] > max) {
+        max = times[i];
+      }
+    }
+    return max;
+  }
 
+  public static long getMin(long[] times) {
+    long min = times[0];
+    for (int i = 0; i < times.length; i++) {
+      if (times[i] < min) {
+        min = times[i];
+      }
+    }
+    return min;
+  }
+
+  //
+  // Test run
+  //
+  public static void performTestRun() {
+    //      Integer[] nums = {2, 5, 0, 16, 42, 8, 3, 12, 7, 12};
+    //    Integer[] nums = {846096478, 852999422, 736753295, 607471164, 103317737, 1051199469, 207973094, 623476563, 917012307, 712123254};
+    Integer[] nums = {7, 2, 1, 8, 6, 3, 5, 4};
+    QuickSort.sort(nums);
+
+    if (!isSorted(nums)){
+      System.out.println("Result: " + Arrays.toString(nums));
+    }
+    return;
+  }
 
   public static void writeStringToFile(String fileContent, String filePath) throws IOException {
     BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
@@ -62,7 +106,7 @@ public class Main {
 
     // Format: time in nanoseconds, n, time (in s)
     for (Map.Entry<Integer, Long> entry : myMap.entrySet()) {
-      writer.println(entry.getValue().toString() + ", " + entry.getKey() + ", " + (float)entry.getValue()/1000000000);
+      writer.println(entry.getKey() + ", " + (float)entry.getValue()/1000000000);
     }
     return stringWriter.toString();
   }
@@ -80,6 +124,7 @@ public class Main {
 //      SelectionSort.sort(nums);
       nums = MergeSort.sort(nums); // merge sort returns a new array
 //      MergeSort2.sort(nums, nums.length); // merge sort returns a new array
+//      QuickSort.sort(nums);
       long end = System.nanoTime();
       long elapsed = end-start;
       times[i] = elapsed;
@@ -121,7 +166,10 @@ public class Main {
     for (int i = 0; i < count; i++) {
       nums[i] = i;
     }
-    Collections.shuffle(Arrays.asList(nums));
+
+    if (SHUFFLENUMS) {
+      Collections.shuffle(Arrays.asList(nums));
+    }
 
     return nums;
   }
@@ -130,16 +178,5 @@ public class Main {
     return (int)(Math.random() * 10 * Math.random() * 10 * 200000);
   }
 
-  public static void performTestRun() {
-    //      Integer[] nums = {2, 5, 0, 16, 42, 8, 3, 12, 7, 12};
-    Integer[] nums = {846096478, 852999422, 736753295, 607471164, 103317737, 1051199469, 207973094, 623476563, 917012307, 712123254};
 
-    Integer[] asdf = MergeSort.sort(nums);
-
-    if (!isSorted(nums)){
-      System.out.println("Result: " + Arrays.toString(nums));
-      System.out.println("Result: " + Arrays.toString(asdf));
-    }
-    return;
-  }
 }
